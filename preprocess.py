@@ -10,6 +10,9 @@ class Reader():
     def read_csv(self) -> pd.DataFrame:
         return self.read_csv(self.data_path+self.dataset)
 
+    def write_csv(self, df: pd.DataFrame, file_name: str) -> None:
+        df.to_csv(self.data_path+file_name)
+
     def drop_columns(self, df: pd.DataFrame, drop_cols: list) -> pd.DataFrame:
         return df.drop(columns=drop_cols, errors='ignore')
 
