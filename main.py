@@ -4,6 +4,8 @@ from sklearn.feature_extraction.text import CountVectorizer, TfidfVectorizer
 from sklearn.metrics.pairwise import cosine_similarity
 import preprocess
 
+DATA_PATH = './data/'
+MODEL_PATH = './model/'
 
 def main():
 
