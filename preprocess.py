@@ -1,6 +1,8 @@
 import os
 import pandas as pd
+import numpy as np
 from tokenizers import Tokenizer, SentencePieceBPETokenizer, BertWordPieceTokenizer
+from sklearn.feature_extraction.text import CountVectorizer, TfidfVectorizer
 
 class Reader():
     def __init__(self, data_path: str, dataset: str):
@@ -8,7 +10,7 @@ class Reader():
         self.dataset = dataset
 
     def read_csv(self) -> pd.DataFrame:
-        return self.read_csv(self.data_path+self.dataset)
+        return pd.read_csv(self.data_path+self.dataset)
 
     def write_csv(self, df: pd.DataFrame, file_name: str) -> None:
         df.to_csv(self.data_path+file_name)
@@ -52,7 +54,7 @@ class SentencePieceTokenizer():
             os.makedirs(model_path)
         self.__tokenizer.save(model_path + 'tokenizer.json')
 
-class BertWordPieceTokenizer():
+class BertWPTokenizer():
     def __init__(self, data_path: str, model_path: str):
         self.data_path = data_path
         self.model_path = model_path
@@ -78,8 +80,20 @@ class BertWordPieceTokenizer():
             os.makedirs(model_path)
         self.__tokenizer.save(model_path + 'tokenizer.json')
 
-class Preprocessor(object):
-    def __init__(self, data_path):
-        self.data_path = data_path
+    def write_df(self, df: pd.DataFrame) -> pd.DataFrame:
+        df['title_bertWP'] = df['title'].apply(lambda x : self.forward(x).tokens).apply(lambda x : " ".join(x))
+        df.to_csv(self.data_path+'preprocessed.csv')
+        return df
 
-    def countVecotrize(self):
+class Vectorizer():
+    def __init__(self, vectorizer_type: str):
+        if vectorizer_type == 'count':
+            self.vectorizer = CountVectorizer(ngram_range=(1, 3))
+        elif vectorizer_type == 'tf-idf':
+            self.vectorizer = TfidfVectorizer(min_df=1, ngram_range=(1,3))
+
+    def vectorize(self, df: pd.DataFrame) -> np.ndarray:
+        document_vec = self.vectorizer.fit_transform(
+            df['title_bertWP'] + ' ' + df['category1'] + ' ' + df['category2']
+        ).toarray()
+        return document_vec
