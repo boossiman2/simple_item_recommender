@@ -1,10 +1,9 @@
 import os
-import argparse
 
 import pandas as pd
 
-from preprocess import Reader, SentencePieceTokenizer, BertWPTokenizer, Vectorizer
-from generate_candidate import Similarity, Candidate
+from preprocess import Reader, BertWPTokenizer, Vectorizer
+from customer_clustering.app.model.recommender import Similarity, Candidate
 
 DATA_PATH = './data/'
 MODEL_PATH = './model/'
